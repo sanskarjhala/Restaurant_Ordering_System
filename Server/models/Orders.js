@@ -1,11 +1,6 @@
 const mongoose = require('mongoose')
 
 const orderSchema = new mongoose.Schema({
-    customerId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Reference to the User model (customer)
-        required: true
-    },
     tableId: {
         type: mongoose.Schema.Types.ObjectId,
         ref: 'Table', // Reference to the Table model

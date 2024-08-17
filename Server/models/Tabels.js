@@ -1,3 +1,5 @@
+const mongoose = require('mongoose')
+
 const tableSchema = new mongoose.Schema({
     tableNumber: {
         type: Number,
@@ -7,10 +9,11 @@ const tableSchema = new mongoose.Schema({
         type: Number,
         required: true
     },
-    orders: [{
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'Order' // Reference to the Order model
-    }]
+    status: {
+        type: String,
+        enum: ["Occupied" , "Free"],
+        default: 'Occupied'
+    }
 }, {
     timestamps: true
 });

@@ -13,6 +13,7 @@ const userSchema = new mongoose.Schema({
     },
     phone:{
         type:Number,
+        required:true
     },
     email:{
         type:String,
@@ -21,23 +22,18 @@ const userSchema = new mongoose.Schema({
         unique:true,
         lowercase:true
     },
+    password:{
+        type:String,
+        required:true,
+    },
+    gender:{
+        type:String,
+    },
     accountType:{
         type:String,
         required:true,
-        enum:["Admin" , "Waiter" , "Manager" , "Customer" , "Cook"]
+        enum:["Admin" , "Waiter" , "Manager" , "Cook"]
     },
-    orders:[
-        {
-            type:mongoose.Schema.Types.ObjectId,
-            ref : 'Order'
-        }
-    ],
-    tabel:[
-        {
-            type: mongoose.Schema.Types.ObjectId,
-            ref:'Table',
-        }
-    ],
     token:{
         type:String
     },
