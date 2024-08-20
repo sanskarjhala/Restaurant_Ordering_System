@@ -26,7 +26,7 @@ exports.createMenuItem = async (req, res) => {
       { _id: categoryId },
       {
         $push: {
-          items: newItem,
+          items: newItem._id, // have to check this 
         },
       }
     );

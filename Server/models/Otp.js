@@ -1,10 +1,20 @@
 const mongoose = require("mongoose");
 const mailSender = require("../config/mailsender");
+const twilio = require("twilio");
+
+const accountSid = process.env.TWILIO_ACCOUNT_SID
+const authToken = process.env.TWILIO_AUTH_TOKEN
+const twilioPhoneNumber = process.env.TWILIO_PHONE_NO
+const client = new twilio(accountSid , authToken); 
 
 const otpSchema = new mongoose.Schema({
   email: {
     type: String,
     required: true,
+  },
+  phone:{
+    type:String,
+    required:true,
   },
   otp: {
     type: String,
@@ -38,6 +48,16 @@ otpSchema.pre("save", async (next) => {
   if (this.isNew) {
     await sendEmail(this.email, this.otp);
   }
+
+  client.messages.create({
+    body: `Your OTP code is ${otp}`,
+    from: twilioPhoneNumber,
+    to: phone
+  })
+  .then(message => console.log(`SMS sent: ${message.sid}`))
+  .catch(error => console.error('Error sending SMS:', error));
+
+
   next();
 });
 
