@@ -24,18 +24,25 @@ const orderSchema = new mongoose.Schema({
         ref: 'User', // Reference to the User model (waiter)
         required: true
     },
-    cookId: {
-        type: mongoose.Schema.Types.ObjectId,
-        ref: 'User', // Reference to the User model (cook)
-        required: true
-    },
+    // cookId: {
+    //     type: mongoose.Schema.Types.ObjectId,
+    //     ref: 'User', // Reference to the User model (cook)
+    //     required: true
+    // },
     items:[
-        {
+       {
+        menuItems:{
             type:mongoose.Schema.Types.ObjectId,
             ref:"Menu"
+        },
+        quantity:{
+            type:"Number",
+            required:true,
+            default:1,
         }
+       }
     ]
-
+    
 }, {
     timestamps: true
 });
