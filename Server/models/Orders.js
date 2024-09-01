@@ -24,11 +24,6 @@ const orderSchema = new mongoose.Schema({
         ref: 'User', // Reference to the User model (waiter)
         required: true
     },
-    // cookId: {
-    //     type: mongoose.Schema.Types.ObjectId,
-    //     ref: 'User', // Reference to the User model (cook)
-    //     required: true
-    // },
     items:[
        {
         menuItems:{
@@ -41,7 +36,13 @@ const orderSchema = new mongoose.Schema({
             default:1,
         }
        }
-    ]
+    ],
+    status:{
+        type:String,
+        enum:["Completed" , "onGoing"],
+        default:"onGoing",
+        required:true,
+    }
     
 }, {
     timestamps: true

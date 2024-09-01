@@ -87,8 +87,6 @@ exports.createOrder = async (req, res) => {
         message: "error while creating the order",
       });
     }
-
-    return res.status(200).json({});
   } catch (error) {
     return res.status(500).json({
       success: false,
@@ -97,3 +95,134 @@ exports.createOrder = async (req, res) => {
     });
   }
 };
+
+//update order -> adding new items
+exports.updateOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+    const { newItems } = req.body;
+    const waiterId = req.user.id;
+
+    if (!orderId || !newItems || !waiterId) {
+      return res.status(403).json({
+        success: false,
+        message: "please provide all fileds",
+      });
+    }
+
+    const order = await Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found ",
+      });
+    }
+
+    let totalAmount = parseInt(order.totalAmount);
+
+    for (const item of newItems) {
+      const menuItem = Menu.findById(item._id);
+
+      if (!menuItem) {
+        res.status(404).json({
+          success: false,
+          message: "Item not found",
+          item: item,
+        });
+        continue;
+      }
+
+      order.items.push({
+        menuItems: menuItem._id,
+        quantity: item.quantity,
+      });
+
+      totalAmount += parseInt(menuItem.price) * item.quantity;
+    }
+
+    order.totalAmount = totalAmount;
+    await order.save();
+
+    return res.status(200).json({
+      success: true,
+      message: "Order updated",
+      updatedOrder: order,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Something went wrong while updating order",
+      error: error,
+    });
+  }
+};
+
+//marking order conmpleted
+exports.markCompleteOrder = async (req, res) => {
+  try {
+    const { orderId } = req.params;
+
+    if (!orderId) {
+      return res.status(403).json({
+        success: false,
+        message: "Order-Id not provided",
+      });
+    }
+
+    const order = Order.findById(orderId);
+
+    if (!order) {
+      return res.status(404).json({
+        success: false,
+        message: "Order not found",
+      });
+    }
+
+    const updatedStatus = await Order.findByIdAndUpdate(
+      { _id: orderId },
+      {
+        status: "Completed",
+      },
+      { new: true }
+    );
+
+    const updatedTableStatus = await Table.findByIdAndUpdate(
+      { _id: order.tableId },
+      {
+        status: "Free",
+      },
+      { new: true }
+    );
+
+    return res.status(200).json({
+      success: false,
+      message: "order status updated successfully",
+      updatedStatus,
+      updatedTableStatus,
+    });
+  } catch (error) {
+    return res.status(500).json({
+      success: false,
+      message: "Something went worng marking order as completed",
+    });
+  }
+};
+
+
+exports.listAllOrders  = async(req,res) => {
+  try {
+    const allOrders = await Order.find({});
+
+    return res.status(200).json({
+      success:true,
+      message:"orders fetched successfully",
+      data:allOrders
+    })
+  } catch (error) {
+    return res.status(500).json({
+      success:false,
+      message:"Something went wrong while fetching the orders"
+    })
+  }
+}
